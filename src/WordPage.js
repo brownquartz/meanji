@@ -4,8 +4,6 @@ import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { Helmet } from 'react-helmet';
 import MeaningsList from './MeaningsList';
-import './App.css';
-import './MainApp.css';
 
 const API_URL = process.env.REACT_APP_API_URL ?? 'http://localhost:4001';
 
@@ -25,34 +23,40 @@ export default function WordPage() {
   }, [text]);
 
   return (
-    <div className="app-container">
+    <div>
       <Helmet>
         <title>{text}｜meanji</title>
         <meta name="description" content={`「${text}」の読み方・意味を調べる`} />
       </Helmet>
 
-      <h1 className="header">{text}</h1>
-
-      {!data && <div>Loading...</div>}
-
-      {data && data !== 'not-found' && (
-        <div className="word-result">
-          {data.entries.map((entry, i) => (
-            <div key={i} className="word-entry">
-              <p className="word-reading">{entry.reading}</p>
-              <MeaningsList meanings={entry.meanings} />
-            </div>
-          ))}
+      <div className="meanji-hero">
+        <div className="meanji-word-header">
+          <h1>{text}</h1>
         </div>
-      )}
+      </div>
 
-      {data === 'not-found' && (
-        <div className="no-data" style={{ marginTop: '1rem' }}>「{text}」は辞書に登録がありませんでした。</div>
-      )}
+      <div className="meanji-main">
+        {!data && <div className="meanji-no-data">Loading...</div>}
 
-      <p style={{ textAlign: 'center', marginTop: '2rem' }}>
-        <Link to="/">← 単語検索へ戻る</Link>
-      </p>
+        {data && data !== 'not-found' && (
+          <div className="meanji-results">
+            {data.entries.map((entry, i) => (
+              <div key={i} className="meanji-card">
+                <p className="meanji-card__reading">{entry.reading}</p>
+                <MeaningsList meanings={entry.meanings} />
+              </div>
+            ))}
+          </div>
+        )}
+
+        {data === 'not-found' && (
+          <div className="meanji-no-data">「{text}」は辞書に登録がありませんでした。</div>
+        )}
+
+        <div style={{ textAlign: 'center' }}>
+          <Link to="/" className="meanji-back-link">← 単語検索へ戻る</Link>
+        </div>
+      </div>
     </div>
   );
 }

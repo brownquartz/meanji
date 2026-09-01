@@ -1,0 +1,220 @@
+/* src/meanji.css — meanji専用スタイル。kanatomy(青系・カード1枚)と差別化するため
+   ティール系のアクセントカラー＋全幅ナビ＋ヒーロー検索の構成にする。 */
+
+:root {
+  --meanji-accent: #0d9488;
+  --meanji-accent-dark: #0f766e;
+  --meanji-bg: #f7faf9;
+}
+
+body {
+  background: var(--meanji-bg);
+  font-family: 'Segoe UI', Roboto, 'Noto Sans SC', 'Noto Sans TC', sans-serif;
+}
+
+/* ─── ナビバー ────────────────────────────────────────────────── */
+.meanji-nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.75rem 1.5rem;
+  background: var(--meanji-accent-dark);
+  color: #fff;
+}
+.meanji-nav__brand {
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: #fff;
+  text-decoration: none;
+  letter-spacing: 0.02em;
+}
+.meanji-nav .language-settings {
+  color: #d9f2ef;
+  padding: 0;
+}
+.meanji-nav .language-settings__label {
+  display: none; /* ナビ内では省スペースのためラベルは隠す */
+}
+.meanji-nav .language-settings button {
+  background: rgba(255, 255, 255, 0.12);
+  border-color: rgba(255, 255, 255, 0.3);
+  color: #fff;
+}
+.meanji-nav .language-settings button.active {
+  background-color: #fff;
+  color: var(--meanji-accent-dark);
+  border-color: #fff;
+}
+
+/* ─── ヒーロー検索エリア ──────────────────────────────────────── */
+.meanji-hero {
+  background: linear-gradient(135deg, var(--meanji-accent), var(--meanji-accent-dark));
+  padding: 3rem 1.5rem 4rem;
+  text-align: center;
+  color: #fff;
+}
+.meanji-hero__title {
+  font-size: 2.2rem;
+  font-weight: 700;
+  margin: 0 0 0.5rem;
+}
+.meanji-hero__subtitle {
+  font-size: 1rem;
+  opacity: 0.9;
+  margin: 0 0 1.75rem;
+}
+.meanji-search-box {
+  display: flex;
+  justify-content: center;
+  gap: 0.5rem;
+  max-width: 480px;
+  margin: 0 auto;
+}
+.meanji-search-box input {
+  flex: 1;
+  font-size: 1.1rem;
+  padding: 0.85rem 1.2rem;
+  border: none;
+  border-radius: 999px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+}
+.meanji-search-box button {
+  padding: 0.85rem 1.6rem;
+  border: none;
+  border-radius: 999px;
+  background: #fff;
+  color: var(--meanji-accent-dark);
+  font-weight: 700;
+  cursor: pointer;
+  transition: transform 0.15s;
+}
+.meanji-search-box button:hover {
+  transform: translateY(-1px);
+}
+.meanji-search-info {
+  margin-top: 1rem;
+  font-size: 0.9rem;
+  opacity: 0.9;
+}
+
+/* ─── 本文エリア ──────────────────────────────────────────────── */
+.meanji-main {
+  max-width: 720px;
+  margin: -2.5rem auto 2rem;
+  padding: 0 1.5rem;
+}
+
+/* ─── 結果カード ──────────────────────────────────────────────── */
+.meanji-results {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+.meanji-card {
+  display: block;
+  background: #fff;
+  border-radius: 12px;
+  padding: 1.25rem 1.5rem;
+  box-shadow: 0 2px 10px rgba(15, 118, 110, 0.08);
+  text-decoration: none;
+  color: inherit;
+  transition: box-shadow 0.15s, transform 0.15s;
+}
+.meanji-card:hover {
+  box-shadow: 0 6px 20px rgba(15, 118, 110, 0.16);
+  transform: translateY(-2px);
+}
+.meanji-card__title {
+  font-size: 1.4rem;
+  font-weight: 700;
+  margin: 0 0 0.15rem;
+  color: #134e4a;
+}
+.meanji-card__reading {
+  color: var(--meanji-accent);
+  font-weight: 500;
+  margin: 0 0 0.5rem;
+}
+.meanji-no-data {
+  text-align: center;
+  color: #6b7280;
+  background: #fff;
+  border-radius: 12px;
+  padding: 2rem;
+  box-shadow: 0 2px 10px rgba(15, 118, 110, 0.08);
+}
+
+/* ─── 単語詳細ページ ──────────────────────────────────────────── */
+.meanji-word-header {
+  text-align: center;
+  margin-bottom: 1.5rem;
+}
+.meanji-word-header h1 {
+  font-size: 3rem;
+  margin: 0;
+  color: #134e4a;
+}
+.meanji-back-link {
+  display: inline-block;
+  margin-top: 2rem;
+  color: var(--meanji-accent);
+  text-decoration: none;
+  font-weight: 500;
+}
+.meanji-back-link:hover {
+  text-decoration: underline;
+}
+
+/* ─── 意味表示（MeaningsList共通コンポーネント向け） ──────────── */
+.meanings-list__block + .meanings-list__block {
+  margin-top: 0.5rem;
+}
+.meanings-list__lang-label {
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--meanji-accent);
+  margin: 0 0 0.2rem;
+  font-weight: 700;
+}
+.meanings-list ol,
+.meanings-list ul {
+  margin: 0;
+  padding-left: 1.2rem;
+  color: #374151;
+}
+
+/* ─── 言語設定（ナビ外で使う場合のフォールバック） ────────────── */
+.language-settings {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.85rem;
+}
+.language-settings button {
+  padding: 0.25rem 0.7rem;
+  border: 1px solid #ccc;
+  border-radius: 999px;
+  background: #f8f9fa;
+  cursor: pointer;
+  font-size: 0.8rem;
+}
+.language-settings button.active {
+  background-color: var(--meanji-accent);
+  color: #fff;
+  border-color: var(--meanji-accent);
+}
+
+/* ─── フッター ────────────────────────────────────────────────── */
+.site-footer {
+  max-width: 720px;
+  margin: 2rem auto 1rem;
+  padding: 1.5rem;
+  font-size: 0.75rem;
+  color: #9ca3af;
+}
+.site-footer p { margin: 0 0 0.4rem; }
+.site-footer ul { list-style: none; margin: 0; padding: 0; }
+.site-footer li { margin-bottom: 0.2rem; }
+.site-footer a { color: #9ca3af; }
+.site-footer a:hover { color: var(--meanji-accent); }
