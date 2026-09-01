@@ -10,10 +10,10 @@ const { Pool } = require('pg');
 const app = express();
 app.use(express.json());
 
-// TODO: 本番ドメイン確定後、実際のURLに差し替える（kanatomy・wordive双方から叩かれる想定）
+// TODO: wordiveをデプロイしたら実URLに差し替える。独自ドメインもここに追加する。
 const allowedOrigins = [
-  'https://TODO-meanji-domain',
-  'https://TODO-kanatomy-domain',
+  'https://meanji-production.up.railway.app',
+  'https://kanatomy-production.up.railway.app',
   'https://TODO-wordive-domain',
   'http://localhost:3000',
   'http://localhost:4000',

@@ -9,7 +9,9 @@
 
 body {
   background: var(--meanji-bg);
-  font-family: 'Segoe UI', Roboto, 'Noto Sans SC', 'Noto Sans TC', sans-serif;
+  /* meanjiは日本語の単語辞書なので日本語の字形を正しく出す Noto Sans JP を使う
+     （中国語圏の漢字は扱わないので Noto Sans SC/TC は不要）。 */
+  font-family: 'Segoe UI', Roboto, 'Noto Sans JP', sans-serif;
 }
 
 /* ─── ナビバー ────────────────────────────────────────────────── */
