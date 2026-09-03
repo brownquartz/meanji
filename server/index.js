@@ -8,6 +8,7 @@ const helmet = require('helmet');
 const rateLimit = require('express-rate-limit');
 const path = require('path');
 const { Pool } = require('pg');
+const { escapeLike } = require('./lib/escapeLike');
 
 const app = express();
 
@@ -64,7 +65,7 @@ app.get('/health', (_, res) => res.json({ ok: true }));
 app.get('/api/words/search', async (req, res) => {
   const q = (req.query.q || '').trim();
   if (!q) return res.json({ results: [] });
-  const escaped = q.replace(/[%_\\]/g, m => `\\${m}`);
+  const escaped = escapeLike(q);
 
   const client = await pool.connect();
   try {
@@ -118,7 +119,7 @@ app.get('/api/word/:text', async (req, res) => {
 // 熟語」セクションから呼ばれる想定（kanatomy → meanji の一方向依存）。
 app.get('/api/kanji-words/:char', async (req, res) => {
   const char = req.params.char;
-  const escaped = char.replace(/[%_\\]/g, m => `\\${m}`);
+  const escaped = escapeLike(char);
   const client = await pool.connect();
   try {
     const { rows } = await client.query(
