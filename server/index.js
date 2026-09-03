@@ -4,10 +4,21 @@
 require('dotenv').config({ path: require('path').join(__dirname, '../.env') });
 const express = require('express');
 const cors = require('cors');
+const helmet = require('helmet');
+const rateLimit = require('express-rate-limit');
 const path = require('path');
 const { Pool } = require('pg');
 
 const app = express();
+
+// Railwayはプロキシ経由なので、express-rate-limit等がクライアントの実IPを
+// 正しく見られるように（無いと全リクエストがプロキシのIP扱いになり、
+// レート制限が実質1人分になってしまう）
+app.set('trust proxy', 1);
+
+app.use(helmet({
+  contentSecurityPolicy: false, // SPAの構成上、まずは無効化（必要なら後で個別に設定する）
+}));
 app.use(express.json());
 
 // TODO: wordiveをデプロイしたら実URLに差し替える。独自ドメインもここに追加する。
@@ -28,6 +39,16 @@ app.use(cors({
     }
   },
 }));
+
+// ─── レート制限 ────────────────────────────────────────────────────────────────
+const apiLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  limit: 300,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { error: 'too many requests, please try again later' },
+});
+app.use('/api/', apiLimiter);
 
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
@@ -66,7 +87,7 @@ app.get('/api/words/search', async (req, res) => {
     res.json({ results: rows });
   } catch (err) {
     console.error(err);
-    res.status(500).json({ error: err.message });
+    res.status(500).json({ error: 'internal server error' });
   } finally {
     client.release();
   }
@@ -85,7 +106,8 @@ app.get('/api/word/:text', async (req, res) => {
     if (!rows.length) return res.status(404).json({ error: 'not found' });
     res.json({ text, entries: rows });
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    console.error(err);
+    res.status(500).json({ error: 'internal server error' });
   } finally {
     client.release();
   }
@@ -110,7 +132,39 @@ app.get('/api/kanji-words/:char', async (req, res) => {
     );
     res.json({ results: rows.map(r => r.kanji_form) });
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    console.error(err);
+    res.status(500).json({ error: 'internal server error' });
+  } finally {
+    client.release();
+  }
+});
+
+// ─── GET /sitemap.xml（express.static の前に配置）────────────────────────────
+app.get('/sitemap.xml', async (req, res) => {
+  // TODO: 独自ドメインを設定したら差し替える
+  const rootUrl = 'https://meanji-production.up.railway.app';
+  const client = await pool.connect();
+  try {
+    // 表記を持つ語のみ（読みだけの語は個別ページの主キーとして使いにくいため対象外）
+    const { rows } = await client.query(
+      `SELECT DISTINCT kanji_form FROM words WHERE kanji_form IS NOT NULL ORDER BY kanji_form LIMIT 50000`
+    );
+
+    const urls = [
+      `  <url><loc>${rootUrl}/</loc></url>`,
+      ...rows.map(r => `  <url><loc>${rootUrl}/word/${encodeURIComponent(r.kanji_form)}</loc></url>`),
+    ].join('\n');
+
+    const xml = `<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+${urls}
+</urlset>`;
+
+    res.setHeader('Content-Type', 'application/xml');
+    res.send(xml);
+  } catch (err) {
+    console.error('sitemap error:', err.message);
+    res.status(500).send('<?xml version="1.0"?><error/>');
   } finally {
     client.release();
   }
