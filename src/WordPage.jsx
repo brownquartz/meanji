@@ -5,8 +5,8 @@ import { useParams, Link } from 'react-router-dom';
 import { Helmet } from 'react-helmet';
 import MeaningsList from './MeaningsList';
 
-const API_URL = process.env.REACT_APP_API_URL ?? 'http://localhost:4001';
-const SITE_URL = process.env.REACT_APP_SITE_URL ?? 'http://localhost:3001';
+const API_URL = import.meta.env.VITE_API_URL ?? 'http://localhost:4001';
+const SITE_URL = import.meta.env.VITE_SITE_URL ?? 'http://localhost:3001';
 
 export default function WordPage() {
   const { text } = useParams();
