@@ -2,4 +2,4 @@
 User-agent: *
 Disallow:
 
-Sitemap: https://kanji-dict.brwqz.net/sitemap.xml
+Sitemap: https://meanji-production.up.railway.app/sitemap.xml
