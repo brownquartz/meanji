@@ -6,6 +6,7 @@ import { Helmet } from 'react-helmet';
 import MeaningsList from './MeaningsList';
 
 const API_URL = process.env.REACT_APP_API_URL ?? 'http://localhost:4001';
+const SITE_URL = process.env.REACT_APP_SITE_URL ?? 'http://localhost:3001';
 
 export default function WordPage() {
   const { text } = useParams();
@@ -27,6 +28,10 @@ export default function WordPage() {
       <Helmet>
         <title>{text}｜meanji</title>
         <meta name="description" content={`「${text}」の読み方・意味を調べる`} />
+        <link rel="canonical" href={`${SITE_URL}/word/${encodeURIComponent(text)}`} />
+        <meta property="og:title" content={`${text}｜meanji`} />
+        <meta property="og:description" content={`「${text}」の読み方・意味を調べる`} />
+        <meta property="og:url" content={`${SITE_URL}/word/${encodeURIComponent(text)}`} />
       </Helmet>
 
       <div className="meanji-hero">
