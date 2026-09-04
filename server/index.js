@@ -22,9 +22,10 @@ app.use(helmet({
 }));
 app.use(express.json());
 
-// TODO: wordiveをデプロイしたら実URLに差し替える。独自ドメインもここに追加する。
+// TODO: wordiveをデプロイしたら実URLに差し替える。
 const allowedOrigins = [
   'https://meanji-production.up.railway.app',
+  'https://kanatomy.brwqz.net',
   'https://kanatomy-production.up.railway.app',
   'https://TODO-wordive-domain',
   'http://localhost:3000',
