@@ -24,6 +24,7 @@ app.use(express.json());
 
 // TODO: wordiveをデプロイしたら実URLに差し替える。
 const allowedOrigins = [
+  'https://meanji.brwqz.net',
   'https://meanji-production.up.railway.app',
   'https://kanatomy.brwqz.net',
   'https://kanatomy-production.up.railway.app',
@@ -144,7 +145,7 @@ app.get('/api/kanji-words/:char', async (req, res) => {
 // ─── GET /sitemap.xml（express.static の前に配置）────────────────────────────
 app.get('/sitemap.xml', async (req, res) => {
   // TODO: 独自ドメインを設定したら差し替える
-  const rootUrl = 'https://meanji-production.up.railway.app';
+  const rootUrl = 'https://meanji.brwqz.net';
   const client = await pool.connect();
   try {
     // 表記を持つ語のみ（読みだけの語は個別ページの主キーとして使いにくいため対象外）
