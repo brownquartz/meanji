@@ -142,20 +142,60 @@ app.get('/api/kanji-words/:char', async (req, res) => {
   }
 });
 
-// ─── GET /sitemap.xml（express.static の前に配置）────────────────────────────
+// ─── sitemap（express.static の前に配置）────────────────────────────────────
+// 単語数が20万件超あり、sitemapの仕様上の上限（1ファイルあたり50,000 URL）を
+// 大きく超えるため、サイトマップインデックス + 複数の子sitemapに分割する。
+// 以前は LIMIT 50000 で先頭50,000件だけを1ファイルに詰めていたため、
+// 残り8割近くの単語ページがsitemapに一切載っておらず検索エンジンから
+// 発見されない状態になっていた。
+const SITEMAP_CHUNK_SIZE = 45000;
+const ROOT_URL = 'https://meanji.brwqz.net';
+
 app.get('/sitemap.xml', async (req, res) => {
-  // TODO: 独自ドメインを設定したら差し替える
-  const rootUrl = 'https://meanji.brwqz.net';
   const client = await pool.connect();
   try {
-    // 表記を持つ語のみ（読みだけの語は個別ページの主キーとして使いにくいため対象外）
     const { rows } = await client.query(
-      `SELECT DISTINCT kanji_form FROM words WHERE kanji_form IS NOT NULL ORDER BY kanji_form LIMIT 50000`
+      'SELECT count(DISTINCT kanji_form) FROM words WHERE kanji_form IS NOT NULL'
+    );
+    const total = Number(rows[0].count);
+    const chunkCount = Math.max(1, Math.ceil(total / SITEMAP_CHUNK_SIZE));
+
+    const sitemaps = Array.from({ length: chunkCount }, (_, i) =>
+      `  <sitemap><loc>${ROOT_URL}/sitemap-${i}.xml</loc></sitemap>`
+    ).join('\n');
+
+    const xml = `<?xml version="1.0" encoding="UTF-8"?>
+<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+${sitemaps}
+</sitemapindex>`;
+
+    res.setHeader('Content-Type', 'application/xml');
+    res.send(xml);
+  } catch (err) {
+    console.error('sitemap index error:', err.message);
+    res.status(500).send('<?xml version="1.0"?><error/>');
+  } finally {
+    client.release();
+  }
+});
+
+// /sitemap-0.xml, /sitemap-1.xml, ... : 実際のURL一覧（chunk 0 だけ先頭にホームページを含む）
+app.get('/sitemap-:n.xml', async (req, res) => {
+  const n = Number(req.params.n);
+  if (!Number.isInteger(n) || n < 0) {
+    return res.status(404).send('<?xml version="1.0"?><error/>');
+  }
+  const client = await pool.connect();
+  try {
+    const { rows } = await client.query(
+      `SELECT DISTINCT kanji_form FROM words WHERE kanji_form IS NOT NULL
+       ORDER BY kanji_form LIMIT $1 OFFSET $2`,
+      [SITEMAP_CHUNK_SIZE, n * SITEMAP_CHUNK_SIZE]
     );
 
     const urls = [
-      `  <url><loc>${rootUrl}/</loc></url>`,
-      ...rows.map(r => `  <url><loc>${rootUrl}/word/${encodeURIComponent(r.kanji_form)}</loc></url>`),
+      ...(n === 0 ? [`  <url><loc>${ROOT_URL}/</loc></url>`] : []),
+      ...rows.map(r => `  <url><loc>${ROOT_URL}/word/${encodeURIComponent(r.kanji_form)}</loc></url>`),
     ].join('\n');
 
     const xml = `<?xml version="1.0" encoding="UTF-8"?>
@@ -166,7 +206,7 @@ ${urls}
     res.setHeader('Content-Type', 'application/xml');
     res.send(xml);
   } catch (err) {
-    console.error('sitemap error:', err.message);
+    console.error('sitemap chunk error:', err.message);
     res.status(500).send('<?xml version="1.0"?><error/>');
   } finally {
     client.release();
