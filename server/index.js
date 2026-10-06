@@ -8,7 +8,10 @@ const helmet = require('helmet');
 const rateLimit = require('express-rate-limit');
 const path = require('path');
 const { Pool } = require('pg');
+const cookieParser = require('cookie-parser');
 const { escapeLike } = require('./lib/escapeLike');
+const createAuthRouter = require('./routes/auth');
+const createVocabRouter = require('./routes/vocab');
 
 const app = express();
 
@@ -21,6 +24,7 @@ app.use(helmet({
   contentSecurityPolicy: false, // SPAの構成上、まずは無効化（必要なら後で個別に設定する）
 }));
 app.use(express.json());
+app.use(cookieParser());
 
 // TODO: wordiveをデプロイしたら実URLに差し替える。
 const allowedOrigins = [
@@ -41,6 +45,7 @@ app.use(cors({
       callback(new Error('CORS policy violation'));
     }
   },
+  credentials: true, // 単語帳のログインCookieをクロスオリジン（ローカル開発時）でも送れるように
 }));
 
 // ─── レート制限 ────────────────────────────────────────────────────────────────
@@ -60,6 +65,11 @@ const pool = new Pool({
 
 // ─── ヘルスチェック ────────────────────────────────────────────────────────────
 app.get('/health', (_, res) => res.json({ ok: true }));
+
+// ─── 単語帳（アカウント・カテゴリ・タグ・保存単語） ────────────────────────────
+const { router: authRouter, requireAuth } = createAuthRouter(pool);
+app.use('/api/auth', authRouter);
+app.use('/api/vocab', createVocabRouter(pool, requireAuth));
 
 // ─── GET /api/words/search ────────────────────────────────────────────────────
 // ?q=<text> — kanji_form / reading を検索する。完全一致 > 前方一致 > 部分一致 の
