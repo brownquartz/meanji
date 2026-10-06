@@ -164,11 +164,19 @@ module.exports = function createVocabRouter(pool, requireAuth) {
     }
   });
 
-  // GET /api/vocab/words/status/:text 指定した単語が保存済みかどうか
+  // GET /api/vocab/words/status/:text 指定した単語が保存済みかどうか（タグ込み）
   router.get('/words/status/:text', async (req, res) => {
     try {
       const { rows } = await pool.query(
-        'SELECT id, category_id FROM saved_words WHERE user_id = $1 AND word_text = $2',
+        `SELECT sw.id, sw.category_id,
+                COALESCE(
+                  (SELECT json_agg(json_build_object('id', t.id, 'name', t.name) ORDER BY t.name)
+                   FROM saved_word_tags swt JOIN tags t ON t.id = swt.tag_id
+                   WHERE swt.saved_word_id = sw.id),
+                  '[]'
+                ) AS tags
+         FROM saved_words sw
+         WHERE sw.user_id = $1 AND sw.word_text = $2`,
         [req.user.uid, req.params.text]
       );
       res.json({ saved: rows.length > 0, savedWord: rows[0] || null });

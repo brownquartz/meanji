@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { Helmet } from 'react-helmet';
 import MeaningsList from './MeaningsList';
+import SaveWordButton from './SaveWordButton';
 
 const API_URL = import.meta.env.VITE_API_URL ?? 'http://localhost:4001';
 const SITE_URL = import.meta.env.VITE_SITE_URL ?? 'http://localhost:3001';
@@ -37,6 +38,7 @@ export default function WordPage() {
       <div className="meanji-hero">
         <div className="meanji-word-header">
           <h1>{text}</h1>
+          <SaveWordButton wordText={text} />
         </div>
       </div>
 

@@ -30,6 +30,26 @@ body {
   text-decoration: none;
   letter-spacing: 0.02em;
 }
+.meanji-nav__right {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+.meanji-nav__link,
+.meanji-nav__link-button {
+  color: #fff;
+  text-decoration: none;
+  font-size: 0.9rem;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-family: inherit;
+  padding: 0;
+}
+.meanji-nav__link:hover,
+.meanji-nav__link-button:hover {
+  text-decoration: underline;
+}
 .meanji-nav .language-settings {
   color: #d9f2ef;
   padding: 0;
@@ -205,6 +225,203 @@ body {
   background-color: var(--meanji-accent);
   color: #fff;
   border-color: var(--meanji-accent);
+}
+
+/* ─── ログイン・新規登録 ──────────────────────────────────────── */
+.meanji-auth-card {
+  max-width: 400px;
+  margin: 0 auto;
+  background: #fff;
+  border-radius: 12px;
+  padding: 2rem;
+  box-shadow: 0 2px 10px rgba(15, 118, 110, 0.08);
+}
+.meanji-auth-card h1 {
+  margin-top: 0;
+  font-size: 1.5rem;
+  color: #134e4a;
+  text-align: center;
+}
+.meanji-auth-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+.meanji-auth-form label {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  font-size: 0.85rem;
+  color: #374151;
+}
+.meanji-auth-form input {
+  padding: 0.6rem 0.8rem;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  font-size: 1rem;
+}
+.meanji-auth-form button {
+  padding: 0.7rem;
+  border: none;
+  border-radius: 8px;
+  background: var(--meanji-accent);
+  color: #fff;
+  font-weight: 700;
+  cursor: pointer;
+}
+.meanji-auth-form button:hover { background: var(--meanji-accent-dark); }
+.meanji-auth-error { color: #dc2626; font-size: 0.85rem; }
+.meanji-auth-switch { text-align: center; font-size: 0.85rem; margin-top: 1rem; color: #6b7280; }
+
+/* ─── 単語帳ページ ────────────────────────────────────────────── */
+.meanji-vocab { max-width: 960px; }
+.meanji-vocab__layout {
+  display: grid;
+  grid-template-columns: 220px 1fr;
+  gap: 1.5rem;
+  align-items: start;
+}
+.meanji-vocab__sidebar {
+  background: #fff;
+  border-radius: 12px;
+  padding: 1.25rem;
+  box-shadow: 0 2px 10px rgba(15, 118, 110, 0.08);
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+.meanji-vocab__sidebar h2 {
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--meanji-accent);
+  margin: 0 0 0.5rem;
+}
+.meanji-vocab__filter-list {
+  list-style: none;
+  margin: 0 0 0.5rem;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+.meanji-vocab__filter-list li {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.meanji-vocab__filter-list button:not(.meanji-vocab__delete) {
+  flex: 1;
+  text-align: left;
+  background: none;
+  border: none;
+  padding: 0.3rem 0.5rem;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  color: #374151;
+}
+.meanji-vocab__filter-list button.active {
+  background: var(--meanji-accent);
+  color: #fff;
+}
+.meanji-vocab__add-form {
+  display: flex;
+  gap: 0.3rem;
+}
+.meanji-vocab__add-form input {
+  flex: 1;
+  min-width: 0;
+  padding: 0.4rem 0.5rem;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  font-size: 0.85rem;
+}
+.meanji-vocab__add-form button {
+  padding: 0.4rem 0.6rem;
+  border: none;
+  border-radius: 6px;
+  background: #e5e7eb;
+  cursor: pointer;
+  font-size: 0.85rem;
+}
+.meanji-vocab__delete {
+  background: none;
+  border: none;
+  color: #9ca3af;
+  cursor: pointer;
+  font-size: 0.8rem;
+  padding: 0.2rem 0.4rem;
+}
+.meanji-vocab__delete:hover { color: #dc2626; }
+.meanji-vocab__words {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+.meanji-vocab__word-meta {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  margin-top: 0.5rem;
+}
+.meanji-vocab__word-meta select {
+  padding: 0.25rem 0.5rem;
+  border-radius: 6px;
+  border: 1px solid #d1d5db;
+  font-size: 0.8rem;
+}
+.meanji-vocab__tag-chip {
+  display: inline-block;
+  padding: 0.15rem 0.6rem;
+  border-radius: 999px;
+  background: #ecfdf5;
+  color: var(--meanji-accent-dark);
+  font-size: 0.75rem;
+  border: 1px solid #a7f3d0;
+  cursor: default;
+}
+button.meanji-vocab__tag-chip {
+  cursor: pointer;
+}
+button.meanji-vocab__tag-chip.active {
+  background: var(--meanji-accent);
+  color: #fff;
+  border-color: var(--meanji-accent);
+}
+
+/* ─── 単語詳細ページの保存ボタン ──────────────────────────────── */
+.meanji-save-word {
+  text-align: center;
+  margin-top: 0.75rem;
+  font-size: 0.9rem;
+}
+.meanji-save-word button {
+  padding: 0.5rem 1.2rem;
+  border: none;
+  border-radius: 999px;
+  background: #fff;
+  color: var(--meanji-accent-dark);
+  font-weight: 700;
+  cursor: pointer;
+}
+.meanji-save-word__controls {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+}
+.meanji-save-word__controls select {
+  padding: 0.3rem 0.5rem;
+  border-radius: 6px;
+  border: none;
+}
+.meanji-save-word__tags {
+  display: flex;
+  gap: 0.3rem;
+  flex-wrap: wrap;
 }
 
 /* ─── フッター ────────────────────────────────────────────────── */
