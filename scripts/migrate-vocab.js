@@ -22,6 +22,12 @@ async function main() {
       )
     `);
 
+    // タグ機能はユーザーごとにON/OFFできる（カテゴリは常時有効・変更不可の方針のため
+    // こちらだけ設定項目にする）。
+    await client.query(`
+      ALTER TABLE users ADD COLUMN IF NOT EXISTS tags_enabled BOOLEAN NOT NULL DEFAULT true
+    `);
+
     await client.query(`
       CREATE TABLE IF NOT EXISTS categories (
         id SERIAL PRIMARY KEY,

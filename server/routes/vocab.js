@@ -127,9 +127,12 @@ module.exports = function createVocabRouter(pool, requireAuth) {
   });
 
   // ─── 保存した単語 ──────────────────────────────────────────────────────────
-  // GET /api/vocab/words?category_id=&tag_id=  パラメータ無し = 全件表示
+  // GET /api/vocab/words?category_id=&tag_id=1&tag_id=2  パラメータ無し = 全件表示
+  // tag_id は複数指定可（いずれか一つでも持っていればヒットするOR条件）。
   router.get('/words', async (req, res) => {
-    const { category_id, tag_id } = req.query;
+    const { category_id } = req.query;
+    let tagIds = req.query.tag_id;
+    if (tagIds !== undefined && !Array.isArray(tagIds)) tagIds = [tagIds];
     try {
       const params = [req.user.uid];
       let where = 'sw.user_id = $1';
@@ -137,10 +140,12 @@ module.exports = function createVocabRouter(pool, requireAuth) {
         params.push(category_id);
         where += ` AND sw.category_id = $${params.length}`;
       }
-      let joinTag = '';
-      if (tag_id) {
-        params.push(tag_id);
-        joinTag = `JOIN saved_word_tags swt_filter ON swt_filter.saved_word_id = sw.id AND swt_filter.tag_id = $${params.length}`;
+      if (tagIds && tagIds.length) {
+        params.push(tagIds.map(Number));
+        where += ` AND EXISTS (
+          SELECT 1 FROM saved_word_tags swt
+          WHERE swt.saved_word_id = sw.id AND swt.tag_id = ANY($${params.length}::int[])
+        )`;
       }
 
       const { rows } = await pool.query(
@@ -152,7 +157,6 @@ module.exports = function createVocabRouter(pool, requireAuth) {
                   '[]'
                 ) AS tags
          FROM saved_words sw
-         ${joinTag}
          WHERE ${where}
          ORDER BY sw.created_at DESC`,
         params

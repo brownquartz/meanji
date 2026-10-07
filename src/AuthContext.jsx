@@ -55,8 +55,21 @@ export function AuthProvider({ children }) {
     setUser(null);
   };
 
+  const updateSettings = async (settings) => {
+    const res = await fetch(`${API_URL}/api/auth/settings`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',
+      body: JSON.stringify(settings),
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || '設定の更新に失敗しました');
+    setUser(data.user);
+    return data.user;
+  };
+
   return (
-    <AuthContext.Provider value={{ user, loading, register, login, logout }}>
+    <AuthContext.Provider value={{ user, loading, register, login, logout, updateSettings }}>
       {children}
     </AuthContext.Provider>
   );

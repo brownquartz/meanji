@@ -44,7 +44,7 @@ module.exports = function createAuthRouter(pool) {
       await client.query('BEGIN');
       const hash = await bcrypt.hash(password, 10);
       const { rows } = await client.query(
-        'INSERT INTO users (email, password_hash) VALUES ($1, $2) RETURNING id, email',
+        'INSERT INTO users (email, password_hash) VALUES ($1, $2) RETURNING id, email, tags_enabled',
         [email, hash]
       );
       const user = rows[0];
@@ -77,7 +77,7 @@ module.exports = function createAuthRouter(pool) {
     }
     try {
       const { rows } = await pool.query(
-        'SELECT id, email, password_hash FROM users WHERE email = $1',
+        'SELECT id, email, password_hash, tags_enabled FROM users WHERE email = $1',
         [email]
       );
       const row = rows[0];
@@ -86,7 +86,7 @@ module.exports = function createAuthRouter(pool) {
       }
       const token = jwt.sign({ uid: row.id, email: row.email }, JWT_SECRET, { expiresIn: '30d' });
       res.cookie(COOKIE_NAME, token, cookieOptions());
-      res.json({ user: { id: row.id, email: row.email } });
+      res.json({ user: { id: row.id, email: row.email, tags_enabled: row.tags_enabled } });
     } catch (err) {
       console.error(err);
       res.status(500).json({ error: 'internal server error' });
@@ -101,8 +101,32 @@ module.exports = function createAuthRouter(pool) {
   });
 
   // GET /api/auth/me
-  router.get('/me', requireAuth, (req, res) => {
-    res.json({ user: { id: req.user.uid, email: req.user.email } });
+  router.get('/me', requireAuth, async (req, res) => {
+    try {
+      const { rows } = await pool.query('SELECT tags_enabled FROM users WHERE id = $1', [req.user.uid]);
+      if (!rows.length) return res.status(401).json({ error: 'invalid session' });
+      res.json({ user: { id: req.user.uid, email: req.user.email, tags_enabled: rows[0].tags_enabled } });
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({ error: 'internal server error' });
+    }
+  });
+
+  // PATCH /api/auth/settings { tags_enabled }
+  router.patch('/settings', requireAuth, async (req, res) => {
+    if (typeof req.body?.tags_enabled !== 'boolean') {
+      return res.status(400).json({ error: 'tags_enabled (boolean) is required' });
+    }
+    try {
+      const { rows } = await pool.query(
+        'UPDATE users SET tags_enabled = $1 WHERE id = $2 RETURNING id, email, tags_enabled',
+        [req.body.tags_enabled, req.user.uid]
+      );
+      res.json({ user: rows[0] });
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({ error: 'internal server error' });
+    }
   });
 
   return { router, requireAuth };

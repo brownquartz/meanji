@@ -1,7 +1,7 @@
 // src/WordPage.js
 // 単語の詳細ページ。kanatomy の「この漢字を使った熟語」リンクの遷移先にもなる。
 import React, { useState, useEffect } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useParams, useLocation, Link } from 'react-router-dom';
 import { Helmet } from 'react-helmet';
 import MeaningsList from './MeaningsList';
 import SaveWordButton from './SaveWordButton';
@@ -11,6 +11,8 @@ const SITE_URL = import.meta.env.VITE_SITE_URL ?? 'http://localhost:3001';
 
 export default function WordPage() {
   const { text } = useParams();
+  const location = useLocation();
+  const fromVocab = location.state?.from === 'vocab';
   const [data, setData] = useState(null); // { entries } | 'not-found' | null
 
   useEffect(() => {
@@ -61,7 +63,11 @@ export default function WordPage() {
         )}
 
         <div style={{ textAlign: 'center' }}>
-          <Link to="/" className="meanji-back-link">← 単語検索へ戻る</Link>
+          {fromVocab ? (
+            <Link to="/vocab" className="meanji-back-link">← 単語帳へ戻る</Link>
+          ) : (
+            <Link to="/" className="meanji-back-link">← 単語検索へ戻る</Link>
+          )}
         </div>
       </div>
     </div>

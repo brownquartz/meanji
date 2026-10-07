@@ -90,6 +90,7 @@ export default function SearchPage() {
               <Link
                 key={i}
                 to={`/word/${encodeURIComponent(entry.kanji_form || entry.reading)}`}
+                state={{ from: 'search' }}
                 className="meanji-card"
               >
                 <h3 className="meanji-card__title">{entry.kanji_form || entry.reading}</h3>

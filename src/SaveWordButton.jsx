@@ -30,7 +30,9 @@ export default function SaveWordButton({ wordText }) {
     if (!user) return;
     refreshStatus();
     api('/api/vocab/categories').then(d => setCategories(d.categories)).catch(() => {});
-    api('/api/vocab/tags').then(d => setTags(d.tags)).catch(() => {});
+    if (user.tags_enabled) {
+      api('/api/vocab/tags').then(d => setTags(d.tags)).catch(() => {});
+    }
   }, [user, refreshStatus]);
 
   if (authLoading) return null;
@@ -99,18 +101,20 @@ export default function SaveWordButton({ wordText }) {
           <select value={saved.category_id || ''} onChange={e => changeCategory(e.target.value)}>
             {categories.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
           </select>
-          <div className="meanji-save-word__tags">
-            {tags.map(t => {
-              const has = (saved.tags || []).some(x => x.id === t.id);
-              return (
-                <button
-                  key={t.id}
-                  className={has ? 'meanji-vocab__tag-chip active' : 'meanji-vocab__tag-chip'}
-                  onClick={() => toggleTag(t.id, has)}
-                >{t.name}</button>
-              );
-            })}
-          </div>
+          {user.tags_enabled && (
+            <div className="meanji-save-word__tags">
+              {tags.map(t => {
+                const has = (saved.tags || []).some(x => x.id === t.id);
+                return (
+                  <button
+                    key={t.id}
+                    className={has ? 'meanji-vocab__tag-chip active' : 'meanji-vocab__tag-chip'}
+                    onClick={() => toggleTag(t.id, has)}
+                  >{t.name}</button>
+                );
+              })}
+            </div>
+          )}
           <button onClick={unsave} className="meanji-vocab__delete">削除</button>
         </div>
       )}
