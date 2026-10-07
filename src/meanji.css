@@ -19,6 +19,8 @@ body {
   display: flex;
   align-items: center;
   justify-content: space-between;
+  flex-wrap: wrap;
+  row-gap: 0.5rem;
   padding: 0.75rem 1.5rem;
   background: var(--meanji-accent-dark);
   color: #fff;
@@ -33,7 +35,8 @@ body {
 .meanji-nav__right {
   display: flex;
   align-items: center;
-  gap: 1rem;
+  flex-wrap: wrap;
+  gap: 0.5rem 1rem;
 }
 .meanji-nav__link,
 .meanji-nav__link-button {
@@ -210,6 +213,7 @@ body {
 .language-settings {
   display: flex;
   align-items: center;
+  flex-wrap: wrap;
   gap: 0.4rem;
   font-size: 0.85rem;
 }
@@ -275,27 +279,40 @@ body {
 
 /* ─── 単語帳ページ ────────────────────────────────────────────── */
 .meanji-vocab { max-width: 960px; }
-.meanji-vocab__layout {
-  display: grid;
-  grid-template-columns: 220px 1fr;
-  gap: 1.5rem;
-  align-items: start;
+.meanji-vocab__filters {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+  margin-bottom: 1.5rem;
 }
-.meanji-vocab__sidebar {
+.meanji-vocab__panel {
+  flex: 1 1 260px;
   background: #fff;
   border-radius: 12px;
-  padding: 1.25rem;
   box-shadow: 0 2px 10px rgba(15, 118, 110, 0.08);
-  display: flex;
-  flex-direction: column;
-  gap: 1.5rem;
+  overflow: hidden;
 }
-.meanji-vocab__sidebar h2 {
-  font-size: 0.8rem;
+.meanji-vocab__panel-toggle {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0.9rem 1.25rem;
+  font-size: 0.85rem;
+  font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.05em;
+  color: var(--meanji-accent-dark);
+}
+.meanji-vocab__chevron {
   color: var(--meanji-accent);
-  margin: 0 0 0.5rem;
+  font-size: 0.8rem;
+}
+.meanji-vocab__panel-body {
+  padding: 0 1.25rem 1.25rem;
 }
 .meanji-vocab__filter-list {
   list-style: none;

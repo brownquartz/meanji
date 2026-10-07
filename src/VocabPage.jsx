@@ -25,6 +25,8 @@ export default function VocabPage() {
   const [newCategoryName, setNewCategoryName] = useState('');
   const [newTagName, setNewTagName] = useState('');
   const [error, setError] = useState('');
+  const [categoriesOpen, setCategoriesOpen] = useState(true);
+  const [tagsOpen, setTagsOpen] = useState(true);
 
   const loadCategories = useCallback(() => {
     api('/api/vocab/categories').then(d => setCategories(d.categories)).catch(e => setError(e.message));
@@ -118,92 +120,114 @@ export default function VocabPage() {
       <h1>単語帳</h1>
       {error && <p className="meanji-auth-error">{error}</p>}
 
-      <div className="meanji-vocab__layout">
-        <aside className="meanji-vocab__sidebar">
-          <section>
-            <h2>カテゴリ</h2>
-            <ul className="meanji-vocab__filter-list">
-              <li>
-                <button
-                  className={categoryId === null ? 'active' : ''}
-                  onClick={() => setCategoryId(null)}
-                >すべて</button>
-              </li>
-              {categories.map(c => (
-                <li key={c.id}>
+      <div className="meanji-vocab__filters">
+        <section className="meanji-vocab__panel">
+          <button
+            type="button"
+            className="meanji-vocab__panel-toggle"
+            onClick={() => setCategoriesOpen(o => !o)}
+            aria-expanded={categoriesOpen}
+          >
+            <span>カテゴリ</span>
+            <span className="meanji-vocab__chevron">{categoriesOpen ? '▾' : '▸'}</span>
+          </button>
+          {categoriesOpen && (
+            <div className="meanji-vocab__panel-body">
+              <ul className="meanji-vocab__filter-list">
+                <li>
                   <button
-                    className={categoryId === c.id ? 'active' : ''}
-                    onClick={() => setCategoryId(c.id)}
-                  >{c.name}</button>
-                  {!c.is_default && (
-                    <button className="meanji-vocab__delete" onClick={() => deleteCategory(c.id)} title="削除">×</button>
-                  )}
+                    className={categoryId === null ? 'active' : ''}
+                    onClick={() => setCategoryId(null)}
+                  >すべて</button>
                 </li>
-              ))}
-            </ul>
-            <form onSubmit={addCategory} className="meanji-vocab__add-form">
-              <input
-                placeholder="新しいカテゴリ名"
-                value={newCategoryName}
-                onChange={e => setNewCategoryName(e.target.value)}
-              />
-              <button type="submit">追加</button>
-            </form>
-          </section>
-
-          <section>
-            <h2>タグ</h2>
-            <ul className="meanji-vocab__filter-list">
-              <li>
-                <button
-                  className={tagId === null ? 'active' : ''}
-                  onClick={() => setTagId(null)}
-                >すべて</button>
-              </li>
-              {tags.map(t => (
-                <li key={t.id}>
-                  <button
-                    className={tagId === t.id ? 'active' : ''}
-                    onClick={() => setTagId(t.id)}
-                  >{t.name}</button>
-                  <button className="meanji-vocab__delete" onClick={() => deleteTag(t.id)} title="削除">×</button>
-                </li>
-              ))}
-            </ul>
-            <form onSubmit={addTag} className="meanji-vocab__add-form">
-              <input
-                placeholder="新しいタグ名"
-                value={newTagName}
-                onChange={e => setNewTagName(e.target.value)}
-              />
-              <button type="submit">追加</button>
-            </form>
-          </section>
-        </aside>
-
-        <main className="meanji-vocab__words">
-          {words.length === 0 && <div className="meanji-no-data">保存された単語がありません。</div>}
-          {words.map(w => (
-            <div key={w.id} className="meanji-card meanji-vocab__word">
-              <Link to={`/word/${encodeURIComponent(w.word_text)}`} className="meanji-card__title">
-                {w.word_text}
-              </Link>
-              <div className="meanji-vocab__word-meta">
-                <select
-                  value={w.category_id || ''}
-                  onChange={e => moveCategory(w.id, e.target.value ? Number(e.target.value) : null)}
-                >
-                  {categories.map(c => (
-                    <option key={c.id} value={c.id}>{c.name}</option>
-                  ))}
-                </select>
-                {w.tags.map(t => <span key={t.id} className="meanji-vocab__tag-chip">{t.name}</span>)}
-                <button className="meanji-vocab__delete" onClick={() => removeSavedWord(w.id)}>削除</button>
-              </div>
+                {categories.map(c => (
+                  <li key={c.id}>
+                    <button
+                      className={categoryId === c.id ? 'active' : ''}
+                      onClick={() => setCategoryId(c.id)}
+                    >{c.name}</button>
+                    {!c.is_default && (
+                      <button className="meanji-vocab__delete" onClick={() => deleteCategory(c.id)} title="削除">×</button>
+                    )}
+                  </li>
+                ))}
+              </ul>
+              <form onSubmit={addCategory} className="meanji-vocab__add-form">
+                <input
+                  placeholder="新しいカテゴリ名"
+                  value={newCategoryName}
+                  onChange={e => setNewCategoryName(e.target.value)}
+                />
+                <button type="submit">追加</button>
+              </form>
             </div>
-          ))}
-        </main>
+          )}
+        </section>
+
+        <section className="meanji-vocab__panel">
+          <button
+            type="button"
+            className="meanji-vocab__panel-toggle"
+            onClick={() => setTagsOpen(o => !o)}
+            aria-expanded={tagsOpen}
+          >
+            <span>タグ</span>
+            <span className="meanji-vocab__chevron">{tagsOpen ? '▾' : '▸'}</span>
+          </button>
+          {tagsOpen && (
+            <div className="meanji-vocab__panel-body">
+              <ul className="meanji-vocab__filter-list">
+                <li>
+                  <button
+                    className={tagId === null ? 'active' : ''}
+                    onClick={() => setTagId(null)}
+                  >すべて</button>
+                </li>
+                {tags.map(t => (
+                  <li key={t.id}>
+                    <button
+                      className={tagId === t.id ? 'active' : ''}
+                      onClick={() => setTagId(t.id)}
+                    >{t.name}</button>
+                    <button className="meanji-vocab__delete" onClick={() => deleteTag(t.id)} title="削除">×</button>
+                  </li>
+                ))}
+              </ul>
+              <form onSubmit={addTag} className="meanji-vocab__add-form">
+                <input
+                  placeholder="新しいタグ名"
+                  value={newTagName}
+                  onChange={e => setNewTagName(e.target.value)}
+                />
+                <button type="submit">追加</button>
+              </form>
+            </div>
+          )}
+        </section>
       </div>
+
+      <main className="meanji-vocab__words">
+        {words.length === 0 && <div className="meanji-no-data">保存された単語がありません。</div>}
+        {words.map(w => (
+          <div key={w.id} className="meanji-card meanji-vocab__word">
+            <Link to={`/word/${encodeURIComponent(w.word_text)}`} className="meanji-card__title">
+              {w.word_text}
+            </Link>
+            <div className="meanji-vocab__word-meta">
+              <select
+                value={w.category_id || ''}
+                onChange={e => moveCategory(w.id, e.target.value ? Number(e.target.value) : null)}
+              >
+                {categories.map(c => (
+                  <option key={c.id} value={c.id}>{c.name}</option>
+                ))}
+              </select>
+              {w.tags.map(t => <span key={t.id} className="meanji-vocab__tag-chip">{t.name}</span>)}
+              <button className="meanji-vocab__delete" onClick={() => removeSavedWord(w.id)}>削除</button>
+            </div>
+          </div>
+        ))}
+      </main>
     </div>
   );
 }
