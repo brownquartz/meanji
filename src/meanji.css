@@ -53,12 +53,40 @@ body {
 .meanji-nav__link-button:hover {
   text-decoration: underline;
 }
+.meanji-nav__lang-menu {
+  position: relative;
+}
+.meanji-nav__lang-toggle {
+  background: rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 6px;
+  color: #fff;
+  cursor: pointer;
+  padding: 0.3rem 0.6rem;
+  font-size: 1rem;
+  line-height: 1;
+}
+.meanji-nav__lang-toggle:hover { background: rgba(255, 255, 255, 0.22); }
+.meanji-nav__lang-dropdown {
+  position: absolute;
+  top: calc(100% + 0.5rem);
+  right: 0;
+  background: var(--meanji-accent-dark);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  border-radius: 8px;
+  padding: 0.75rem;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
+  z-index: 20;
+  white-space: nowrap;
+}
 .meanji-nav .language-settings {
   color: #d9f2ef;
   padding: 0;
 }
 .meanji-nav .language-settings__label {
-  display: none; /* ナビ内では省スペースのためラベルは隠す */
+  display: block; /* ドロップダウン内は幅に余裕があるのでラベルを表示する */
+  margin-bottom: 0.4rem;
+  font-size: 0.75rem;
 }
 .meanji-nav .language-settings button {
   background: rgba(255, 255, 255, 0.12);
